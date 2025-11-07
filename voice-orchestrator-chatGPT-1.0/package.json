@@ -1,0 +1,88 @@
+{
+    "name": "voice-orchestrator",
+    "displayName": "Voice Orchestrator (Windsurf/Cursor)",
+    "description": "Voice discussion partner + task planner that queues prompts into Inline Chat without interrupting the IDE’s backend.",
+    "version": "0.1.0",
+    "publisher": "Harsh Mohite",
+    "engines": {
+        "vscode": "^1.93.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished",
+        "onCommand:voiceOrch.toggle",
+        "onView:voiceOrch.sidebar"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "voiceOrch.toggle",
+                "title": "Voice Orchestrator: Toggle Listening"
+            },
+            {
+                "command": "voiceOrch.askStatus",
+                "title": "Voice Orchestrator: What’s Going On?"
+            },
+            {
+                "command": "voiceOrch.enqueue",
+                "title": "Voice Orchestrator: Enqueue Prompt"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "voiceOrch",
+                    "title": "Voice",
+                    "icon": "resources/mic.svg"
+                }
+            ]
+        },
+        "views": {
+            "voiceOrch": [
+                {
+                    "id": "voiceOrch.sidebar",
+                    "type": "webview",
+                    "name": "Voice Orchestrator"
+                }
+            ]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "Voice Orchestrator",
+            "properties": {
+                "voiceOrch.openaiApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "OpenAI-compatible API key for Task Planner (used locally; not transmitted to webview)."
+                },
+                "voiceOrch.model": {
+                    "type": "string",
+                    "default": "gpt-4o-mini",
+                    "description": "Model for planning & structuring actions."
+                },
+                "voiceOrch.wakeWord": {
+                    "type": "string",
+                    "default": "hey code",
+                    "description": "Wake word phrase recognized in the sidebar."
+                }
+            }
+        }
+    },
+    "main": "./dist/extension.js",
+    "scripts": {
+        "build": "tsc -p .",
+        "watch": "tsc -w -p .",
+        "vscode:prepublish": "npm run build"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.30",
+        "@types/vscode": "^1.93.0",
+        "typescript": "^5.6.3",
+        "vscode": "^1.1.37"
+    },
+    "dependencies": {
+        "whisper-node": "^1.1.1"
+    }
+}

@@ -1,0 +1,74 @@
+{
+  "name": "voice-task-planner",
+  "displayName": "Voice AI Task Planner",
+  "description": "Voice-controlled AI orchestrator for Cursor and Windsurf",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "voiceTaskPlanner.startListening",
+        "title": "Start Voice Task",
+        "category": "Voice Task Planner",
+        "icon": "$(mic)"
+      },
+      {
+        "command": "voiceTaskPlanner.showStatus",
+        "title": "Show Current Task Status",
+        "category": "Voice Task Planner",
+        "icon": "$(info)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "voiceTaskPlanner.startListening",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      },
+      {
+        "command": "voiceTaskPlanner.showStatus",
+        "key": "ctrl+shift+s",
+        "mac": "cmd+shift+s"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "voiceTaskPlanner.startListening"
+        },
+        {
+          "command": "voiceTaskPlanner.showStatus"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "18.x",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.54.0",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "openai": "^4.20.0"
+  }
+}

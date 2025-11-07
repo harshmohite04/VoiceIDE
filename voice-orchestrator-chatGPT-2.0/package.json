@@ -1,0 +1,79 @@
+{
+  "name": "voice-orchestrator",
+  "displayName": "Voice Orchestrator",
+  "description": "Voice-driven orchestration layer for Cursor, Windsurf, and VS Code AI.",
+  "version": "0.1.0",
+  "publisher": "your-name",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:voiceOrchestrator.start",
+    "onCommand:voiceOrchestrator.status",
+    "onView:voiceOrchestrator.sidebar"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "voiceOrchestrator.start",
+        "title": "Voice Orchestrator: Start Listening"
+      },
+      {
+        "command": "voiceOrchestrator.status",
+        "title": "Voice Orchestrator: What's Going On?"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "voiceOrchestrator",
+          "title": "Orchestrator",
+          "icon": "media/mic.svg"
+        }
+      ]
+    },
+    "views": {
+      "voiceOrchestrator": [
+        {
+          "id": "voiceOrchestrator.sidebar",
+          "name": "Voice Orchestrator",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Voice Orchestrator Settings",
+      "properties": {
+        "voiceOrchestrator.ide": {
+          "type": "string",
+          "enum": [
+            "cursor",
+            "windsurf",
+            "vscode",
+            "mock"
+          ],
+          "default": "vscode",
+          "markdownDescription": "Which editor's AI to control."
+        }
+      }
+    }
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -w -p ."
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/vscode": "^1.91.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "node-record-lpcm16": "^1.0.1"
+  }
+}
