@@ -1,0 +1,103 @@
+{
+  "name": "voice-orchestrator-ide",
+  "version": "1.0.0",
+  "description": "Voice-powered AI assistant for Windsurf and Cursor IDEs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "package:windsurf": "vsce package --out windsurf-voice-assistant.vsix",
+    "package:cursor": "vsce package --out cursor-voice-assistant.vsix"
+  },
+  "keywords": ["voice", "ai", "ide", "assistant", "windsurf", "cursor"],
+  "author": "Harsh Mohite",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harshmohite04/voice-orchestrator-ide.git"
+  },
+  "homepage": "https://github.com/harshmohite04/voice-orchestrator-ide#readme",
+  "bugs": {
+    "url": "https://github.com/harshmohite04/voice-orchestrator-ide/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0",
+    "@types/uuid": "^9.0.0",
+    "@types/lodash": "^4.14.0",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "ts-node": "^10.0.0",
+    "typescript": "^5.0.0",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "openai": "^4.20.0",
+    "ws": "^8.14.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.0",
+    "axios": "^1.6.0",
+    "uuid": "^9.0.0",
+    "lodash": "^4.17.21"
+  },
+  "engines": {
+    "vscode": "^1.74.0",
+    "node": ">=18.0.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "voiceOrchestrator.startListening",
+        "title": "Start Voice Assistant",
+        "category": "Voice Orchestrator"
+      },
+      {
+        "command": "voiceOrchestrator.stopListening",
+        "title": "Stop Voice Assistant",
+        "category": "Voice Orchestrator"
+      },
+      {
+        "command": "voiceOrchestrator.toggleMute",
+        "title": "Toggle Voice Assistant Mute",
+        "category": "Voice Orchestrator"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "voiceOrchestrator.startListening",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      }
+    ],
+    "configuration": {
+      "title": "Voice Orchestrator",
+      "properties": {
+        "voiceOrchestrator.openaiApiKey": {
+          "type": "string",
+          "description": "OpenAI API Key for AI conversations and voice recognition"
+        },
+        "voiceOrchestrator.voiceLanguage": {
+          "type": "string",
+          "default": "en-US",
+          "description": "Voice recognition language (e.g., en-US, es-ES, fr-FR)"
+        },
+        "voiceOrchestrator.aiModel": {
+          "type": "string",
+          "default": "gpt-4",
+          "description": "OpenAI model to use for conversations"
+        }
+      }
+    }
+  }
+}
