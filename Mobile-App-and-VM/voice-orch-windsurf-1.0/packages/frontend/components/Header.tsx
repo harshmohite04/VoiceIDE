@@ -16,6 +16,11 @@ export function Header({ isRecording = false, onToggleRecording }: HeaderProps) 
 
   const handleSignIn = async () => {
     try {
+      if (!auth) {
+        console.log('Firebase not configured - already in development mode')
+        return
+      }
+      
       const provider = new GoogleAuthProvider()
       await signInWithPopup(auth, provider)
     } catch (error) {
@@ -25,6 +30,11 @@ export function Header({ isRecording = false, onToggleRecording }: HeaderProps) 
 
   const handleSignOut = async () => {
     try {
+      if (!auth) {
+        console.log('Firebase not configured - cannot sign out in development mode')
+        return
+      }
+      
       await signOut(auth)
       setShowUserMenu(false)
     } catch (error) {
@@ -132,7 +142,7 @@ export function Header({ isRecording = false, onToggleRecording }: HeaderProps) 
                 onClick={handleSignIn}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
-                Sign In with Google
+                {auth ? 'Sign In with Google' : 'Development Mode'}
               </button>
             )}
           </div>

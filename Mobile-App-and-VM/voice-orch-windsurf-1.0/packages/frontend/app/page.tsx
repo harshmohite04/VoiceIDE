@@ -1,7 +1,8 @@
 'use client'
 
-import { VoiceChat } from '@/components/VoiceChat'
-import { Header } from '@/components/Header'
+import { VoiceChat } from '../components/VoiceChat'
+import { Header } from '../components/Header'
+import { VMManager } from '../components/VMManager'
 
 export default function Home() {
   return (
@@ -17,8 +18,10 @@ export default function Home() {
               Your AI-powered development companion. Discuss ideas, build prototypes, and stream outputs in real-time.
             </p>
           </div>
-          
-          <VoiceChat />
+          <div className="space-y-8">
+            <VoiceChat />
+            <VMManager />
+          </div>
         </div>
       </div>
     </main>

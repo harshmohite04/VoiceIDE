@@ -9,6 +9,7 @@ import { setupSocketHandlers } from './socket/socketHandlers';
 import { authRoutes } from './routes/auth';
 import { voiceRoutes } from './routes/voice';
 import { sessionRoutes } from './routes/session';
+import { vmRoutes } from './routes/vm';
 import { logger } from './utils/logger';
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/voice', voiceRoutes);
 app.use('/api/session', sessionRoutes);
+app.use('/api/vm', vmRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
