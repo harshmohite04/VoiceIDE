@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { OpenAI } from 'openai';
 import { ConversationContext } from './conversationContext';
+import { NativeVoiceManager } from './nativeVoiceManager';
+import { PermissionManager } from './permissionManager';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -14,9 +16,14 @@ export class GeminiVoiceManager {
     private isSessionActive = false;
     private recognition: any = null;
     private audioContext: AudioContext | null = null;
+    private nativeVoiceManager: NativeVoiceManager;
+    private permissionManager: PermissionManager;
+    private useNativeFallback = false;
 
     constructor(private context: vscode.ExtensionContext) {
         this.conversationContext = new ConversationContext();
+        this.nativeVoiceManager = new NativeVoiceManager(context);
+        this.permissionManager = PermissionManager.getInstance(context);
         this.initializeServices();
     }
 
@@ -62,11 +69,36 @@ export class GeminiVoiceManager {
             return;
         }
 
+        // Request microphone permission with user-friendly flow
+        const permissionResult = await this.permissionManager.requestMicrophonePermission();
+        
+        if (!permissionResult.granted) {
+            // Permission denied, but still allow text-only mode
+            vscode.window.showInformationMessage(
+                '🎤 Voice input is not available, but you can still use text input!',
+                'The extension will work in text-only mode with AI voice responses.'
+            );
+            // Continue with session but without voice input
+        }
+
         this.isSessionActive = true;
-        await this.setupWebSpeechRecognition();
+
+        // Set up voice recognition based on permission result
+        if (permissionResult.granted) {
+            if (permissionResult.method === 'native') {
+                this.useNativeFallback = true;
+                await this.setupNativeVoiceRecognition();
+            } else {
+                await this.setupWebSpeechRecognition();
+            }
+        }
         
         // Welcome message
-        await this.speakResponse("Hello! I'm your voice-powered product manager and discussion partner. How can I help you today?");
+        const welcomeMessage = permissionResult.granted 
+            ? "Hello! I'm your voice-powered product manager and discussion partner. You can speak or type your questions. How can I help you today?"
+            : "Hello! I'm your AI product manager and discussion partner. Please type your questions and I'll respond with voice. How can I help you today?";
+        
+        await this.speakResponse(welcomeMessage);
     }
 
     private async setupWebSpeechRecognition(): Promise<void> {
@@ -132,6 +164,32 @@ export class GeminiVoiceManager {
             panel.webview.postMessage({ command: 'initialize' });
             resolve();
         });
+    }
+
+    private async setupNativeVoiceRecognition(): Promise<void> {
+        try {
+            // Set up event handling for native voice recognition
+            const originalCommand = vscode.commands.registerCommand('voicePM.updateUI', (data) => {
+                if (data.type === 'speech_recognized') {
+                    this.processUserInput(data.message);
+                }
+            });
+            this.context.subscriptions.push(originalCommand);
+
+            // Start native voice recognition
+            await this.nativeVoiceManager.startVoiceRecognition();
+            this.isListening = true;
+            this.updateUI('listening', 'Native voice recognition active - speak now!');
+            
+        } catch (error) {
+            console.error('Native voice recognition failed:', error);
+            vscode.window.showWarningMessage(
+                'Native voice recognition failed. Falling back to browser-based speech recognition.',
+                'OK'
+            );
+            this.useNativeFallback = false;
+            await this.setupWebSpeechRecognition();
+        }
     }
 
     private getSpeechRecognitionHTML(): string {
@@ -697,6 +755,12 @@ export class GeminiVoiceManager {
     stopVoiceSession(): void {
         this.isSessionActive = false;
         this.isListening = false;
+        
+        // Stop native voice recognition if active
+        if (this.useNativeFallback && this.nativeVoiceManager) {
+            this.nativeVoiceManager.stopVoiceRecognition();
+        }
+        
         this.updateUI('stopped', 'Voice session stopped');
     }
 
@@ -721,5 +785,8 @@ export class GeminiVoiceManager {
 
     dispose(): void {
         this.stopVoiceSession();
+        if (this.nativeVoiceManager) {
+            this.nativeVoiceManager.dispose();
+        }
     }
 }

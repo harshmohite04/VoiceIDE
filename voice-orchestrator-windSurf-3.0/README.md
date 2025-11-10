@@ -17,32 +17,49 @@ A powerful voice-powered extension that acts as your AI discussion partner and p
 
 ## 🚀 Quick Start
 
-### Prerequisites
+1. **Install the extension** from the `.vsix` file
+2. **Configure API keys** in VS Code settings:
+   - `voicePM.openaiApiKey`: Your OpenAI API key
+   - `voicePM.googleCloudKeyFile`: Path to Google Cloud service account JSON
+   - `voicePM.googleProjectId`: Your Google Cloud project ID
+3. **Start voice conversation** with `Ctrl+Shift+V`
+   - The extension will automatically guide you through microphone permission setup
+   - Choose from Native Windows Speech (recommended) or Browser-based speech
+   - No manual settings.json editing required!
+4. **Toggle microphone** with `Ctrl+Shift+M`
 
-1. **Google Cloud TTS**: Set up a service account from [Google Cloud Console](https://console.cloud.google.com)
-2. **OpenAI API**: Get your API key from [OpenAI Platform](https://platform.openai.com)
+## 🎤 Microphone Permission Setup
 
-### Installation
+The extension now features **automatic, user-friendly microphone permission handling**:
 
-1. Install the extension in Windsurf
-2. Open the Command Palette (`Ctrl+Shift+P`)
-3. Run "Voice PM: Open Voice PM Dashboard"
-4. Configure your API keys in settings
+### ✅ **What Users See:**
+- **Permission Dialog**: Clear choice between Native Windows Speech and Browser-based speech
+- **Automatic Detection**: Extension tries the best available method first
+- **Guided Setup**: Step-by-step permission testing with visual feedback
+- **Fallback Options**: If voice fails, text input still works with AI voice responses
+- **Help System**: Built-in troubleshooting for common permission issues
 
-### Configuration
+### 🔧 **Permission Methods:**
+1. **Native Windows Speech** (Recommended)
+   - Uses Windows built-in speech recognition
+   - No browser permission popups needed
+   - Most reliable across different environments
 
-Open Windsurf settings and configure:
+2. **Browser-based Speech**
+   - Uses Web Speech API in webview
+   - Automatic permission popup handling
+   - Fallback for when native speech isn't available
 
-```json
-{
-  "voicePM.openaiApiKey": "your-openai-api-key",
-  "voicePM.googleCloudKeyFile": "/path/to/service-account-key.json",
-  "voicePM.googleProjectId": "your-google-cloud-project-id",
-  "voicePM.voiceLanguage": "en-US",
-  "voicePM.geminiVoice": "en-US-Standard-J",
-  "voicePM.conversationMode": "product_manager"
-}
-```
+3. **Text-only Mode**
+   - Full functionality with text input
+   - AI still responds with voice
+   - Perfect fallback when microphone access fails
+
+### 🛠️ **For Developers:**
+- **No settings.json editing required** for end users
+- **Automatic webview permission configuration**
+- **Graceful degradation** when permissions fail
+- **Reset permissions command** for testing: `Voice PM: Reset Microphone Permissions`
 
 ## 🎯 Usage
 

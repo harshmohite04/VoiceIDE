@@ -50,6 +50,11 @@
         "command": "voicePM.openDashboard",
         "title": "Open Voice PM Dashboard",
         "category": "Voice PM"
+      },
+      {
+        "command": "voicePM.resetPermissions",
+        "title": "Reset Microphone Permissions",
+        "category": "Voice PM"
       }
     ],
     "views": {
