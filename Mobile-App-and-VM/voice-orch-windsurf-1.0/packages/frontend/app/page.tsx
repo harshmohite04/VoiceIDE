@@ -5,7 +5,6 @@ import { VoiceChat } from '../components/VoiceChat'
 import { RealtimeVoiceChat } from '../components/RealtimeVoiceChat'
 import { RealtimeDiagnostics } from '../components/RealtimeDiagnostics'
 import { Header } from '../components/Header'
-import { VMManager } from '../components/VMManager'
 
 export default function Home() {
   const [voiceMode, setVoiceMode] = useState<'traditional' | 'realtime' | 'diagnostics'>('realtime')
@@ -20,7 +19,7 @@ export default function Home() {
               🎙️ VoiceDev Partner
             </h1>
             <p className="text-xl text-slate-300 mb-6">
-              Your AI-powered development companion. Discuss ideas, build prototypes, and stream outputs in real-time.
+              Your AI-powered development companion with automatic project execution. Discuss ideas and watch them come to life automatically.
             </p>
             
             {/* Voice Mode Toggle */}
@@ -62,7 +61,6 @@ export default function Home() {
             {voiceMode === 'traditional' && <VoiceChat />}
             {voiceMode === 'realtime' && <RealtimeVoiceChat />}
             {voiceMode === 'diagnostics' && <RealtimeDiagnostics />}
-            <VMManager />
           </div>
         </div>
       </div>

@@ -26,7 +26,8 @@ export function RealtimeVoiceChat() {
   const [audioLevel, setAudioLevel] = useState(0)
   const [showMessages, setShowMessages] = useState(false)
   const [currentTranscript, setCurrentTranscript] = useState('')
-  
+  const [lastAudioTime, setLastAudioTime] = useState<number>(0)
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioContextRef = useRef<AudioContext | null>(null)
   const audioChunksRef = useRef<Float32Array[]>([])
@@ -67,6 +68,12 @@ export function RealtimeVoiceChat() {
       console.error('Realtime error:', error)
       addSystemMessage(`Error: ${error.message || error.error || 'Unknown error'}`)
       setConnectionStatus('disconnected')
+      
+      // Clear audio queue on error to prevent stuck state
+      audioQueueRef.current = []
+      isPlayingRef.current = false
+      setIsPlaying(false)
+      setAiState('idle')
     }
 
     const handleSpeechStarted = (data: any) => {
@@ -103,7 +110,8 @@ export function RealtimeVoiceChat() {
         setAiState('idle')
         setAudioLevel(0)
         // Audio response complete
-        addSystemMessage('🔊 Audio response complete')
+        console.log('Audio response stream completed')
+        // Don't add system message for every completion to reduce noise
       }
     }
 
@@ -262,6 +270,7 @@ export function RealtimeVoiceChat() {
 
       // Resume audio context if suspended (required by some browsers)
       if (audioContextRef.current.state === 'suspended') {
+        console.log('Resuming suspended audio context')
         await audioContextRef.current.resume()
       }
 
@@ -269,6 +278,12 @@ export function RealtimeVoiceChat() {
 
       while (audioQueueRef.current.length > 0) {
         const float32Data = audioQueueRef.current.shift()!
+        
+        // Validate audio data
+        if (!float32Data || float32Data.length === 0) {
+          console.warn('Empty audio chunk, skipping')
+          continue
+        }
         
         // Create audio buffer from PCM data
         const audioBuffer = audioContextRef.current.createBuffer(1, float32Data.length, 24000)
@@ -283,17 +298,33 @@ export function RealtimeVoiceChat() {
         
         console.log('Playing audio chunk, duration:', audioBuffer.duration)
         
-        // Wait for audio to finish playing
-        await new Promise<void>((resolve) => {
+        // Wait for audio to finish playing with timeout
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.warn('Audio chunk timeout, forcing resolve')
+            resolve()
+          }, audioBuffer.duration * 1000 + 1000) // Buffer duration + 1s safety
+          
           source.onended = () => {
+            clearTimeout(timeout)
             console.log('Audio chunk finished')
             resolve()
           }
-          source.start()
+          
+          // AudioBufferSourceNode doesn't have onerror, handle errors in try/catch
+          
+          try {
+            source.start()
+          } catch (error) {
+            clearTimeout(timeout)
+            console.error('Error starting audio source:', error)
+            resolve()
+          }
         })
       }
     } catch (error) {
       console.error('Error playing queued audio:', error)
+      addSystemMessage('❌ Audio playback error - trying to recover')
     } finally {
       isPlayingRef.current = false
       setIsPlaying(false)
